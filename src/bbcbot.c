@@ -26,6 +26,7 @@ int main(int argc, char const *argv[])
             bot_send_email(bot);
         }
 
+        printf("BOT ENTERS SLEEP FOR %ds\n", BOT_SLEEP_INTERVAL_SEC);
         bot_sleep();
 
         if (should_start_new_week(bot))
