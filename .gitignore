@@ -1,0 +1,15 @@
+# project files
+api_key.txt
+credentials.txt
+home_waypoints.cfg
+trips.json
+bbcbot
+
+# object files
+*.o
+
+# ide
+.vscode
+
+# OS
+.DS_Store

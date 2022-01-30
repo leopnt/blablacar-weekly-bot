@@ -1,0 +1,40 @@
+2022-01-21
+- got a successful libcurl setup working
+- imported cJSON library so that I can convert raw api response into JSON object
+
+2022-01-22
+- trying to use sockets instead of libcurl but the HTTP GET request sends
+a 308 redirection to https. So I need to use openssl and some fancy stuff
+to get a secure ssl connection.
+I finally depend on OpenSSL so libcurl will do just fine
+- made a basic model of the decision process
+- refactored api request to a api_caller struct
+- successful json data extraction test
+- starting project structure and json trip data extraction
+
+2022-01-23
+- finished Blablacar json data parsing
+- Found a database with a lot of car data (including trunk max size in liters)
+- cleaned the database to get only what I need in a .csv file
+
+2022-01-24
+- started csv parsing of car database
+
+2022-01-28
+- finished parsing implementation of csv vehicles
+- noticed memory leak when using url method
+- made a .cfg (w/ parser) to store custom user home waypoints
+- implemented decision model functions
+- huge improvement by using strstr() instead of strcmp() for trunk size str
+match (it finds a lot more of car/models)
+
+2022-01-29
+- some code refactoring for waypoint cfg reads
+- found that the memory leak comes from write_response_from_url() and seems
+to be common by using curl (which may do a leak of 336MB after 1000 calls)
+- made the bot loop cycle
+- successful email sending
+- noticed "abort" crash when using url method
+- estimated memory leak: 336 B/day = 122.64 MB/year
+So not a big deal for my usage
+- fixed "abort" crash by caching the API data to a file instead of a string
