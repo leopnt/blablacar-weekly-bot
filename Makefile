@@ -1,4 +1,4 @@
-CC = gcc
+CC = gcc -Wall
 OBJECTS_1 = utils.o trip.o cjson.o waypoint.o api_caller.o bot.o email_sender.o
 OBJECTS_2 = csv_db_parser.o json_api_parser.o vehicle.o cfg_parser.o
 OBJECTS = bbcbot.o $(OBJECTS_1) $(OBJECTS_2)
