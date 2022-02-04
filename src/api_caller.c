@@ -48,15 +48,6 @@ char *write_response_from_url(char *api_response, const char *url)
     return api_response;
 }
 
-static size_t read_callback(
-    char *ptr, size_t size, size_t nmemb, void *userdata)
-{
-    char *api_response = (char *)userdata;
-    strcat(api_response, ptr);
-
-    return size * nmemb;
-}
-
 char *make_url(char url[URL_MAX_SIZE])
 {
     char api_key[128];

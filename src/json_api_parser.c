@@ -54,7 +54,6 @@ struct trip get_trip(
     const cJSON *json_trip, const struct vehicle *known_vehicles)
 {
     struct trip trip;
-    struct json_api_parser parser;
 
     strcpy(trip.link, get_trip_link(json_trip));
     trip.price = get_trip_price(json_trip);
@@ -170,7 +169,6 @@ size_t get_trip_waypoints_size(const cJSON *json_trip)
 
 struct waypoint get_trip_waypoint(const cJSON *json_waypoint)
 {
-    struct waypoint waypoint;
     struct json_api_parser parser;
     parser.waypoint_place = cJSON_GetObjectItem(json_waypoint, "place");
 

@@ -28,8 +28,6 @@ struct api_caller
 char *write_response_from_json_file(char *api_response, const char *filename);
 
 char *write_response_from_url(char *api_response, const char *api_url);
-static size_t read_callback(
-    char *buffer, size_t size, size_t nitems, void *userdata);
 
 char *make_url(char url[URL_MAX_SIZE]);
 char *read_api_key(char api_key_dest[API_KEY_BUF_SIZE], const char *filename);

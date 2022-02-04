@@ -13,8 +13,6 @@ struct upload_status
     const char *payload_text;
 };
 
-static size_t payload_source(char *ptr, size_t size, size_t nmemb, void *userp);
-
 int send_email(
     const char *from_mail,
     const char *to_mail,
