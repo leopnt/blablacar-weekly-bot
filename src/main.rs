@@ -2,6 +2,7 @@ mod api_caller;
 mod car;
 mod config;
 mod geopoint;
+mod trip;
 
 extern crate chrono;
 extern crate reqwest;
@@ -30,15 +31,7 @@ async fn main() -> Result<(), reqwest::Error> {
 
     println!("{:?}\n", config);
 
-    let cars = match car::Cars::new(&config.car_db_filename) {
-        Ok(cars) => cars,
-        Err(e) => {
-            println!("Cannot read car database: {}", e);
-            std::process::exit(1);
-        }
-    };
-
-    let request = api_caller::request(config);
+    let request = api_caller::request(&config);
     let response = match api_caller::response(&request).await {
         Ok(response) => response,
         Err(e) => {
@@ -47,22 +40,17 @@ async fn main() -> Result<(), reqwest::Error> {
         }
     };
 
+    let cars = match car::Cars::new(&config.car_db_filename) {
+        Ok(cars) => cars,
+        Err(e) => {
+            println!("Cannot read car database: {}", e);
+            std::process::exit(1);
+        }
+    };
+
     for trip in response.trips.iter() {
-        let default_vehicle = api_caller::Vehicle {
-            make: String::from("N/A"),
-            model: String::from("N/A"),
-        };
-
-        let vehicle = match trip.vehicle.as_ref() {
-            Some(vehicle) => vehicle,
-            None => &default_vehicle,
-        };
-
-        let make = &vehicle.make;
-        let model = &vehicle.model;
-        let key = format!("{}{}", make, model);
-        let trunk_size = cars.get_trunk_size(&key);
-        println!("{} {}: {:?}", make, model, trunk_size);
+        let trip = trip::Trip::new(&trip, &cars);
+        println!("{:?}", trip);
     }
 
     Ok(())

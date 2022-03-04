@@ -14,11 +14,11 @@ pub enum CsvParseCarError {
 pub struct Car {
     make: String,
     model: String,
-    trunk_size: u16,
+    trunk_size: Option<u16>,
 }
 
 impl Car {
-    pub fn new(make: &str, model: &str, trunk_size: u16) -> Car {
+    pub fn new(make: &str, model: &str, trunk_size: Option<u16>) -> Car {
         Car {
             make: String::from(make),
             model: String::from(model),
@@ -51,7 +51,7 @@ impl FromStr for Car {
             Err(_err) => return Err(CsvParseCarError::InvalidTrunkSize),
         };
 
-        Ok(Car::new(&make, &model, trunk_size))
+        Ok(Car::new(&make, &model, Some(trunk_size)))
     }
 }
 
@@ -84,7 +84,7 @@ impl Cars {
                     };
 
                     let key = format!("{}{}", car.make, car.model);
-                    cars.data.insert(key, car.trunk_size);
+                    cars.data.insert(key, car.trunk_size.unwrap());
 
                     line.clear();
                 }
@@ -100,8 +100,9 @@ impl Cars {
         self.data.keys()
     }
 
-    pub fn get_trunk_size(&self, key: &str) -> Option<&u16> {
-        self.data.get(key)
+    pub fn trunk_size(&self, make: &str, model: &str) -> Option<u16> {
+        let key = format!("{}{}", make, model);
+        self.data.get(&key).copied()
     }
 }
 
@@ -114,7 +115,7 @@ mod tests {
             Ok(Car {
                 make: String::from("PEUGEOT"),
                 model: String::from("206"),
-                trunk_size: 1337,
+                trunk_size: Some(1337),
             }),
             Car::from_str("Peugeot,206,1337")
         );

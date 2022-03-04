@@ -1,3 +1,5 @@
+use crate::api_caller;
+
 use std::fmt;
 use std::str::FromStr;
 
@@ -17,6 +19,13 @@ pub struct GeoPoint {
 impl GeoPoint {
     pub fn new(lat: f32, long: f32) -> Self {
         Self { lat, long }
+    }
+
+    pub fn new_from_waypoint(waypoint: &api_caller::Waypoint) -> Self {
+        let lat = waypoint.place.latitude;
+        let long = waypoint.place.longitude;
+
+        GeoPoint { lat, long }
     }
 }
 

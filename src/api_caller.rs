@@ -52,7 +52,7 @@ pub struct Vehicle {
     pub model: String,
 }
 
-pub fn request(config: Config) -> String {
+pub fn request(config: &Config) -> String {
     format!(
         "https://public-api.blablacar.com/api/v3/trips?\
         from_coordinate={}&to_coordinate={}\
