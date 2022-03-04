@@ -1,10 +1,16 @@
+mod api_caller;
 mod car;
 mod config;
 mod geopoint;
 
 extern crate chrono;
+extern crate reqwest;
+extern crate serde;
+extern crate serde_json;
+extern crate tokio;
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), reqwest::Error> {
     let config = match config::Config::new(&mut std::env::args()) {
         Ok(config) => config,
         Err(e) => {
@@ -37,17 +43,20 @@ fn main() {
     }
     println!("...\n");
 
-    let request_url = format!(
-        "https://public-api.blablacar.com/api/v3/trips?\
-        from_coordinate={}&to_coordinate={}\
-        &locale=fr-FR&currency=EUR\
-        &start_date_local={}T00:00:00\
-        &count={}\
-        &key={}",
-        config.from, config.to, config.date, 20, config.api_key
-    );
+    let request = api_caller::request(config);
+    let response = match api_caller::response(&request).await {
+        Ok(response) => response,
+        Err(e) => {
+            println!("{}", e);
+            std::process::exit(1);
+        }
+    };
 
-    println!("{}", request_url);
+    for trip in response.trips.iter() {
+        println!("{:?}", trip.vehicle);
+    }
+
+    Ok(())
 }
 
 fn print_usage() {
