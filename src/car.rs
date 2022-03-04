@@ -1,3 +1,5 @@
+use std::collections::hash_map::{Keys, Values};
+use std::collections::HashMap;
 use std::fs;
 use std::str::FromStr;
 
@@ -10,49 +12,18 @@ pub enum CsvParseCarError {
 
 #[derive(Debug, PartialEq)]
 pub struct Car {
-    model: String,
     make: String,
+    model: String,
     trunk_size: u16,
 }
 
 impl Car {
-    pub fn new(model: &str, make: &str, trunk_size: u16) -> Car {
+    pub fn new(make: &str, model: &str, trunk_size: u16) -> Car {
         Car {
-            model: String::from(model),
             make: String::from(make),
+            model: String::from(model),
             trunk_size,
         }
-    }
-
-    pub fn load_cars(csv_filename: &str) -> Result<Vec<Car>, String> {
-        let content = match fs::read_to_string(csv_filename) {
-            Ok(content) => content,
-            Err(err) => return Err(format!("{}: {}", csv_filename, err)),
-        };
-        let mut content = content.chars();
-
-        let mut cars: Vec<Car> = Vec::<Car>::new();
-        let mut line = String::new();
-
-        let mut c = content.next();
-        while c != None {
-            match c {
-                Some('\n') => {
-                    let csv_line = line.trim(); // remove \r
-                    let car = match Car::from_str(&csv_line) {
-                        Ok(car) => car,
-                        Err(err) => return Err(format!("{}: {:?}", line, err)),
-                    };
-                    cars.push(car);
-                    line.clear();
-                }
-                _ => line.push(c.unwrap()),
-            }
-
-            c = content.next();
-        }
-
-        Ok(cars)
     }
 }
 
@@ -73,14 +44,64 @@ impl FromStr for Car {
             }
         }
 
-        let model = car_data[0];
-        let make = car_data[1];
+        let make = car_data[0].to_uppercase();
+        let model = car_data[1].to_uppercase();
         let trunk_size = match car_data[2].parse::<u16>() {
             Ok(size) => size,
             Err(_err) => return Err(CsvParseCarError::InvalidTrunkSize),
         };
 
-        Ok(Car::new(model, make, trunk_size))
+        Ok(Car::new(&make, &model, trunk_size))
+    }
+}
+
+pub struct Cars {
+    data: HashMap<String, u16>, // "MODELMAKE": trunk_size
+}
+
+impl Cars {
+    pub fn new(csv_filename: &str) -> Result<Self, String> {
+        let content = match fs::read_to_string(csv_filename) {
+            Ok(content) => content,
+            Err(err) => return Err(format!("{}: {}", csv_filename, err)),
+        };
+        let mut content = content.chars();
+
+        let mut cars = Cars {
+            data: HashMap::<String, u16>::new(),
+        };
+
+        let mut line = String::new();
+
+        let mut c = content.next();
+        while c != None {
+            match c {
+                Some('\n') => {
+                    let csv_line = line.trim(); // remove \r
+                    let car = match Car::from_str(&csv_line) {
+                        Ok(car) => car,
+                        Err(err) => return Err(format!("{}: {:?}", line, err)),
+                    };
+
+                    let key = format!("{}{}", car.make, car.model);
+                    cars.data.insert(key, car.trunk_size);
+
+                    line.clear();
+                }
+                _ => line.push(c.unwrap()),
+            }
+
+            c = content.next();
+        }
+        Ok(cars)
+    }
+
+    pub fn keys(&self) -> Keys<String, u16> {
+        self.data.keys()
+    }
+
+    pub fn get_trunk_size(&self, key: &str) -> Option<&u16> {
+        self.data.get(key)
     }
 }
 
@@ -91,8 +112,8 @@ mod tests {
     fn parse() {
         assert_eq!(
             Ok(Car {
-                model: String::from("Peugeot"),
-                make: String::from("206"),
+                make: String::from("PEUGEOT"),
+                model: String::from("206"),
                 trunk_size: 1337,
             }),
             Car::from_str("Peugeot,206,1337")

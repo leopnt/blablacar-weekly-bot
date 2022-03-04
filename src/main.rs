@@ -30,18 +30,13 @@ async fn main() -> Result<(), reqwest::Error> {
 
     println!("{:?}\n", config);
 
-    let cars = match car::Car::load_cars(&config.car_db_filename) {
+    let cars = match car::Cars::new(&config.car_db_filename) {
         Ok(cars) => cars,
         Err(e) => {
             println!("Cannot read car database: {}", e);
             std::process::exit(1);
         }
     };
-
-    for i in 0..10 {
-        println!("{:?}", cars[i]);
-    }
-    println!("...\n");
 
     let request = api_caller::request(config);
     let response = match api_caller::response(&request).await {
@@ -53,7 +48,21 @@ async fn main() -> Result<(), reqwest::Error> {
     };
 
     for trip in response.trips.iter() {
-        println!("{:?}", trip.vehicle);
+        let default_vehicle = api_caller::Vehicle {
+            make: String::from("N/A"),
+            model: String::from("N/A"),
+        };
+
+        let vehicle = match trip.vehicle.as_ref() {
+            Some(vehicle) => vehicle,
+            None => &default_vehicle,
+        };
+
+        let make = &vehicle.make;
+        let model = &vehicle.model;
+        let key = format!("{}{}", make, model);
+        let trunk_size = cars.get_trunk_size(&key);
+        println!("{} {}: {:?}", make, model, trunk_size);
     }
 
     Ok(())
