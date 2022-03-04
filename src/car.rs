@@ -1,4 +1,3 @@
-use std::collections::hash_map::{Keys, Values};
 use std::collections::HashMap;
 use std::fs;
 use std::str::FromStr;
@@ -94,10 +93,6 @@ impl Cars {
             c = content.next();
         }
         Ok(cars)
-    }
-
-    pub fn keys(&self) -> Keys<String, u16> {
-        self.data.keys()
     }
 
     pub fn trunk_size(&self, make: &str, model: &str) -> Option<u16> {
