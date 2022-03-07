@@ -8,6 +8,7 @@ use car::Cars;
 use chrono::NaiveDateTime;
 use config::Config;
 use geopoint::GeoPoint;
+use std::fmt;
 
 #[derive(Debug)]
 pub struct Trip {
@@ -135,6 +136,21 @@ impl Trip {
 
     pub fn fitness(&self, config: &Config, maxs: &TripsMaxCosts) -> f32 {
         1.0 / self.trip_cost(config, maxs)
+    }
+}
+
+impl fmt::Display for Trip {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}€\t{}s\t{}\t{} {}\n{}",
+            self.price,
+            self.duration_seconds,
+            self.depart_time.time(),
+            self.vehicle.make(),
+            self.vehicle.model(),
+            self.link
+        )
     }
 }
 

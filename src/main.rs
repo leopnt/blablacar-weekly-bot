@@ -29,8 +29,6 @@ async fn main() -> Result<(), reqwest::Error> {
         }
     };
 
-    println!("{:?}\n", config);
-
     let request = api_caller::request(&config);
     let response = match api_caller::response(&request).await {
         Ok(response) => response,
@@ -64,7 +62,7 @@ async fn main() -> Result<(), reqwest::Error> {
 
     for trip in trips.data().iter() {
         println!(
-            "\n{:?}\nfitness: {}",
+            "{}\nfitness: {}\n",
             trip,
             trip.fitness(&config, &trips_max_costs)
         );

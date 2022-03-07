@@ -24,6 +24,13 @@ impl Car {
             trunk_size,
         }
     }
+    pub fn model(&self) -> &str {
+        &self.model
+    }
+
+    pub fn make(&self) -> &str {
+        &self.make
+    }
 
     pub fn trunk_size(&self) -> Option<u16> {
         self.trunk_size
