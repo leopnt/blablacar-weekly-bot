@@ -3,6 +3,8 @@ use crate::api_caller;
 use std::fmt;
 use std::str::FromStr;
 
+const EARTH_RADIUS_METERS: f32 = 6366597.0;
+
 #[derive(Debug, PartialEq)]
 pub enum ParseGeoPointError {
     InvalidSize,
@@ -26,6 +28,19 @@ impl GeoPoint {
         let long = waypoint.place.longitude;
 
         GeoPoint { lat, long }
+    }
+
+    pub fn dist_between(src: &GeoPoint, dest: &GeoPoint) -> u32 {
+        let delta_long: f32 = dest.long.to_radians() - src.long.to_radians();
+        let delta_lat: f32 = dest.lat.to_radians() - src.lat.to_radians();
+
+        let mut a = (delta_lat / 2.0).sin().powi(2);
+        a += src.lat.cos() * dest.lat.cos();
+        a *= (delta_long / 2.0).sin().powi(2);
+
+        let c = 2.0 * a.sqrt().atan2((1.0 - a).sqrt());
+
+        (EARTH_RADIUS_METERS * c) as u32
     }
 }
 

@@ -2,7 +2,7 @@ use crate::geopoint::GeoPoint;
 use crate::geopoint::ParseGeoPointError;
 use std::str::FromStr;
 
-use chrono::NaiveDate;
+use chrono::NaiveDateTime;
 
 #[derive(Debug, PartialEq)]
 pub enum ConfigError {
@@ -16,7 +16,7 @@ pub struct Config {
     pub car_db_filename: String,
     pub from: GeoPoint,
     pub to: GeoPoint,
-    pub date: chrono::NaiveDate,
+    pub date: NaiveDateTime,
     pub api_key: String,
 }
 
@@ -61,7 +61,8 @@ impl Config {
             Err(e) => return Err(ConfigError::InvalidGeopoint(e)),
         };
 
-        let date = match NaiveDate::parse_from_str(&date_arg, "%Y-%m-%d") {
+        let fmt = "%Y-%m-%dT%H:%M:%S";
+        let date = match NaiveDateTime::parse_from_str(&date_arg, fmt) {
             Ok(date) => date,
             Err(e) => return Err(ConfigError::InvalidDate(e)),
         };

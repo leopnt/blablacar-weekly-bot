@@ -60,7 +60,11 @@ pub fn request(config: &Config) -> String {
         &start_date_local={}T00:00:00\
         &count={}\
         &key={}",
-        config.from, config.to, config.date, 20, config.api_key
+        config.from,
+        config.to,
+        config.date.date(),
+        50,
+        config.api_key
     )
 }
 

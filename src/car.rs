@@ -24,6 +24,10 @@ impl Car {
             trunk_size,
         }
     }
+
+    pub fn trunk_size(&self) -> Option<u16> {
+        self.trunk_size
+    }
 }
 
 impl FromStr for Car {
